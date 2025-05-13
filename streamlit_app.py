@@ -147,7 +147,7 @@ if selected_file:
         st.warning("No valid messages found.")
     else:
         senders = sorted(set(m['sender'] for m in messages))
-        st.markdown("**👤 Filter joju senders**  _(select or remove names to filter the chat view)_")
+        st.markdown("**👤 Filter senders**  _(select or remove names to filter the chat view)_")
         selected_senders = st.multiselect("", senders, default=senders)
         st.markdown("**🔍 Search messages**  _(type a word or phrase to search inside messages)_")
         search_term = st.text_input("")
