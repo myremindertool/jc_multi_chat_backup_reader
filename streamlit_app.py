@@ -93,7 +93,6 @@ st.markdown("""
     padding-right: 1rem;
     margin-top: 1rem;
     border-top: 1px solid #eee;
-    scrollbar-gutter: stable;
 }
 @media (max-width: 768px) {
     .chat-scroll-wrapper {
@@ -173,10 +172,13 @@ if selected_file:
         st.markdown("**🔍 Search messages**  _(type a word or phrase to search inside messages)_")
         search_term = st.text_input("")
 
+        # ✅ Add slider to limit number of displayed messages
+        limit = st.slider("🔢 Max messages to display:", 100, 1000, 300, step=100)
+
         filtered_messages = [
             m for m in messages
             if m['sender'] in selected_senders and search_term.lower() in m['message'].lower()
-        ]
+        ][:limit]
 
         st.info(f"Parsed {len(messages)} messages. Showing {len(filtered_messages)} after filters.")
         st.markdown("<div class='chat-scroll-wrapper'>", unsafe_allow_html=True)
