@@ -12,12 +12,14 @@ def parse_chat(content):
         try:
             dt = datetime.strptime(f"{match[0]} {match[1]}", "%d/%m/%Y %H:%M")
             messages.append({"datetime": dt, "sender": match[2], "message": match[3]})
-        except: continue
+        except:
+            continue
     for match in iphone_pattern.findall(content):
         try:
             dt = datetime.strptime(f"{match[0]} {match[1]}", "%d/%m/%Y %I:%M:%S %p")
             messages.append({"datetime": dt, "sender": match[2], "message": match[3]})
-        except: continue
+        except:
+            continue
     return sorted(messages, key=lambda x: x["datetime"], reverse=True)
 
 def sender_color(sender):
@@ -38,7 +40,7 @@ st.set_page_config(page_title="JC WhatsApp Chat Viewer", layout="wide")
 st.markdown("""
 <style>
 .block-container {
-    padding-top: 1rem !important;
+    padding-top: 0.5rem !important;
     padding-bottom: 1rem !important;
 }
 .fixed-header {
@@ -124,7 +126,7 @@ st.markdown("""
 # ------------------ UI Controls ------------------ #
 with st.container():
     st.markdown("<div class='fixed-header'>", unsafe_allow_html=True)
-    st.title("💬 JC WhatsApp Multi-Chat Viewer")
+    st.markdown("<h3 style='margin-bottom: 0.5rem;'>💬 JC WhatsApp Multi-Chat Viewer</h3>", unsafe_allow_html=True)
     st.markdown("**📂 Choose chat file to view**  _(select the backup chat you want to read)_")
     chat_files = [f for f in os.listdir() if f.endswith(".txt") and f.lower() != "requirements.txt"]
     selected_file = st.selectbox("", chat_files)
@@ -147,7 +149,7 @@ if selected_file:
         search_term = st.text_input("")
 
         st.markdown("**🔢 Max messages to display**")
-        limit = st.slider("", 100, 1000, 300, step=100)
+        limit = st.slider("", 100, 20000, 1000, step=100)
 
         filtered_messages = [
             m for m in messages
@@ -184,7 +186,7 @@ if selected_file:
 
             st.markdown("<div style='color: gray; font-size: 0.8rem;'>-- End of Chat --</div>", unsafe_allow_html=True)
 
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)  # Close chat-scroll-wrapper
 
-        # Footer
-        st.markdown("<div class='footer'>🔧 Developed by: <strong>JC</strong></div>", unsafe_allow_html=True)
+        # Footer (placed after scroll wrapper)
+        st.markdown("<div class='footer'>✅ Developed by <strong>JC</strong></div>", unsafe_allow_html=True)
