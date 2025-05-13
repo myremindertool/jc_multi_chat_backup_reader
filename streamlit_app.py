@@ -134,8 +134,9 @@ document.addEventListener('DOMContentLoaded', function() {
 with st.container():
     st.markdown("<div class='fixed-header'>", unsafe_allow_html=True)
     st.title("💬 JC WhatsApp Multi-Chat Viewer")
+    st.markdown("**📂 Choose chat file to view**  _(select the backup chat you want to read)_")
     chat_files = [f for f in os.listdir() if f.endswith(".txt") and f.lower() != "requirements.txt"]
-    selected_file = st.selectbox("📂 Choose chat file to view:", chat_files)
+    selected_file = st.selectbox("", chat_files)
     st.markdown("</div>", unsafe_allow_html=True)
 
 if selected_file:
@@ -146,8 +147,10 @@ if selected_file:
         st.warning("No valid messages found.")
     else:
         senders = sorted(set(m['sender'] for m in messages))
-        selected_senders = st.multiselect("👤 Filter senders:", senders, default=senders)
-        search_term = st.text_input("🔍 Search messages:")
+        st.markdown("**👤 Filter senders**  _(select or remove names to filter the chat view)_")
+        selected_senders = st.multiselect("", senders, default=senders)
+        st.markdown("**🔍 Search messages**  _(type a word or phrase to search inside messages)_")
+        search_term = st.text_input("")
 
         filtered_messages = [
             m for m in messages
@@ -181,4 +184,9 @@ if selected_file:
                     </div>
                 """, unsafe_allow_html=True)
             st.markdown("<div style='color: gray; font-size: 0.8rem;'>-- End of Chat --</div>", unsafe_allow_html=True)
+
         st.markdown("</div>", unsafe_allow_html=True)
+
+# Footer
+st.markdown("<hr style='margin-top:2rem;'>", unsafe_allow_html=True)
+st.markdown("<div style='text-align: center; color: #888;'>🔧 <strong>Developed by: JC</strong></div>", unsafe_allow_html=True)
