@@ -4,7 +4,6 @@ import re
 from datetime import datetime
 import hashlib
 
-# ------------------ Utility Functions ------------------ #
 def parse_chat(content):
     android_pattern = re.compile(r"(\d{2}/\d{2}/\d{4}), (\d{1,2}:\d{2}) - (.*?): (.*)")
     iphone_pattern = re.compile(r"\[(\d{2}/\d{2}/\d{4}), (\d{1,2}:\d{2}:\d{2} [APMapm]{2})\] (.*?): (.*)")
@@ -33,18 +32,14 @@ def get_initials(name):
     parts = name.strip().split()
     return (parts[0][0] + parts[-1][0]).upper() if len(parts) > 1 else parts[0][0].upper()
 
-# ------------------ Page Setup ------------------ #
 st.set_page_config(page_title="JC WhatsApp Chat Viewer", layout="wide")
 
-# ------------------ Custom Styling ------------------ #
+# ------------------ Styling ------------------ #
 st.markdown("""
 <style>
 .block-container {
     padding-top: 1rem !important;
     padding-bottom: 1rem !important;
-}
-.css-1kyxreq, .css-1vq4p4l {
-    margin-bottom: 0.3rem !important;
 }
 .fixed-header {
     position: sticky;
@@ -57,7 +52,7 @@ st.markdown("""
 .message-box {
     border-radius: 10px;
     padding: 0.75rem;
-    margin: 0.25rem 0;
+    margin: 0.4rem 0;
     display: flex;
     align-items: flex-start;
     font-size: 0.95rem;
@@ -68,7 +63,7 @@ st.markdown("""
 .sender-header {
     font-weight: 600;
     color: #333;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.2rem;
 }
 .timestamp {
     font-size: 0.75rem;
@@ -87,6 +82,13 @@ st.markdown("""
     margin-right: 0.75rem;
     flex-shrink: 0;
 }
+.message-text {
+    word-break: break-word;
+    white-space: pre-wrap;
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+    color: #222;
+}
 .chat-scroll-wrapper {
     max-height: 65vh;
     overflow-y: auto;
@@ -94,56 +96,29 @@ st.markdown("""
     margin-top: 1rem;
     border-top: 1px solid #eee;
 }
-@media (max-width: 768px) {
-    .chat-scroll-wrapper {
-        max-height: 50vh;
-        padding-right: 0.5rem;
-    }
-    .message-box {
-        font-size: 0.88rem;
-        padding: 0.6rem;
-    }
-    .avatar {
-        width: 1.8rem;
-        height: 1.8rem;
-        font-size: 0.8rem;
-    }
-}
-.chat-scroll-wrapper::-webkit-scrollbar {
-    width: 12px;
-}
-.chat-scroll-wrapper::-webkit-scrollbar-track {
-    background: #f0f0f0;
-}
-.chat-scroll-wrapper::-webkit-scrollbar-thumb {
-    background-color: red;
-    border-radius: 6px;
-    border: 3px solid #f0f0f0;
-}
 .footer {
     text-align: center;
     color: #888;
     font-size: 0.8rem;
     padding-top: 1rem;
 }
+@media (max-width: 768px) {
+    .message-box {
+        flex-direction: column;
+        padding: 0.6rem;
+    }
+    .avatar {
+        width: 2rem;
+        height: 2rem;
+        font-size: 0.8rem;
+        margin-bottom: 0.4rem;
+    }
+    .message-text {
+        font-size: 0.85rem;
+        margin-left: 0.2rem;
+    }
+}
 </style>
-""", unsafe_allow_html=True)
-
-# ------------------ Optional JavaScript Enhancements ------------------ #
-st.markdown("""
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const chatArea = document.querySelector('.chat-scroll-wrapper');
-  if (chatArea) {
-    chatArea.addEventListener('wheel', function(e) {
-      const canScroll = this.scrollHeight > this.clientHeight;
-      if (canScroll) {
-        e.stopPropagation();
-      }
-    }, { passive: true });
-  }
-});
-</script>
 """, unsafe_allow_html=True)
 
 # ------------------ UI Controls ------------------ #
@@ -155,7 +130,6 @@ with st.container():
     selected_file = st.selectbox("", chat_files)
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ------------------ Chat Viewer Logic ------------------ #
 if selected_file:
     with open(selected_file, "r", encoding="utf-8") as f:
         content = f.read().replace('\u202f', ' ').replace('\u200e', '')
@@ -172,8 +146,8 @@ if selected_file:
         st.markdown("**🔍 Search messages**  _(type a word or phrase to search inside messages)_")
         search_term = st.text_input("")
 
-        # ✅ Add slider to limit number of displayed messages
-        limit = st.slider("🔢 Max messages to display:", 100, 1000, 300, step=100)
+        st.markdown("**🔢 Max messages to display**")
+        limit = st.slider("", 100, 1000, 300, step=100)
 
         filtered_messages = [
             m for m in messages
@@ -197,12 +171,13 @@ if selected_file:
                 avatar = f"<div class='avatar'>{initials}</div>"
                 color = sender_color(m['sender'])
                 sender_line = f"<span class='sender-header'>{m['sender']}<span class='timestamp'> &nbsp;&nbsp;{m['datetime'].strftime('%I:%M %p')}</span></span>"
+                
                 st.markdown(f"""
                     <div class='message-box' style='background-color: {color};'>
                         {avatar}
-                        <div>
+                        <div style='flex:1; min-width: 0;'>
                             {sender_line}
-                            <div>{m['message']}</div>
+                            <div class='message-text'>{m['message']}</div>
                         </div>
                     </div>
                 """, unsafe_allow_html=True)
@@ -211,5 +186,5 @@ if selected_file:
 
         st.markdown("</div>", unsafe_allow_html=True)
 
-        # ✅ Footer only after content is shown
+        # Footer
         st.markdown("<div class='footer'>🔧 Developed by: <strong>JC</strong></div>", unsafe_allow_html=True)
